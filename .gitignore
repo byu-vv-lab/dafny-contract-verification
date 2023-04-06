@@ -1,0 +1,15 @@
+*.aux
+*.bbl
+*.blg
+*.fdb*
+*.log
+*.synctex.gz
+*.fls
+dirt
+proposal.d
+proposal.pdf
+.DS*
+*.zip
+*.out
+*.slang*
+*.lus
