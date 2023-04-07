@@ -42,7 +42,7 @@ pitfalls in software contracts and describes a plan to detect those pitfalls.
 It also outlines the
 blueprint for a tool built for the Dafny programming language that would detect and mitigate the pitfalls. The ideas
 and algorithms presented can be extended to other contract-based languages.
-\egm{Give an intuitive definition of Dafny (same for other terms). The introduction can give a proper defininition of each of the concepts mentioned in the abstract.}
+\egm{Give an intuitive definition of Dafny (same for other terms). The introduction can give a proper definition of each of the concepts mentioned in the abstract.}
 
 \end{abstract}
 
@@ -62,17 +62,15 @@ that a program’s contract and implementation agree.
 \egm{I might suggest using \emph{safe substitution} above since Dafny proves an implementation is a safe substitution for a contract. It follows the Liskov principle---all need to be defined.}
 However, a proof of this form can be misleading - though
 one can be sure that the implementation adheres to the contract, there is no guarantee that the contract itself
-is correct.
-\egm{Maybe, no guarantees that the contract itself is not without defects?}
+is without defects.
 
 Writing correct contracts can be as error prone as writing correct implementations, so a proof of adherence
 between the two can be meaningless if there are issues in the specification. There are many common pitfalls
 that can easily go undetected, and the consequences of these pitfalls can often completely void the utility of
 a contract. Even worse, a bad contract gone undetected can create a false sense of confidence in a system,
 because contracts are often tied to proofs. Though a system “proves out”, it only proves out relative to the
-specifications. Faulty specifications lead to faulty implementations, so developers need to be extremely confident
-that the former are correct.
-\egm{I might suggest that faulty contracts lead to implementations that do not have the intended behavior.}
+specifications. Faulty specifications lead to implementations that do not have the intended behavior, so developers 
+need to be extremely confident that the former are correct. 
 
 This work will focus on mitigating three common pitfalls of software contracts: inconsistency, unconstrained
 outputs, and redundancy. A contract is consistent if all of its components are realizable, meaning that the contract
@@ -81,16 +79,15 @@ or cause properties to be vacuously true, as a false premise always leads to a t
 unconstrained when it is possible, given certain inputs, to end up with outputs that are in a domain that is not specified.
 The implications of an unconstrained output can be large - it means that there is a section of an output that is
 completely irrelevant in verification. Finally, A contract is redundant when there are unnecessary components. Contracts
-with redundancy can become convoluted, making them more difficult to debug and understand, and therefore more
+with redundancy can become convoluted, making them more difficult to read and understand, and therefore more
 error-prone.
-\egm{Maybe, redundant makes a contract more difficult to \textbf{read} and understand?}
 
-We propose a black-box SMT-based solution to the three mentioned pitfalls. The solution is black-box in the sense
-that it does not require associated implementations for the contracts it analyzes. This approach makes the ideas and tools
-more extendable, as the only inputs are logical constraints that can be sent to an SMT-solver. It also allows developers
-to sanity check their specifications {\it before} linking them to an implementation, so as not to convolute the issues
-that arise from specifications alone, or the linking of the specifications and the implementation.
-\egm{I might suggest that the ideal way to create a software system is to first write the contract specification, with any appropriate proofs, and then implement each contract. Writing what the system should do before implementation lets designers reason in the abstract before working out how the actual computation takes place so the properties of the systems, and key components, are known prior to implementation. In any case, I'm not sure blackbox is a good fit for the text. I might suggest that the key here is that the contract itself, and not the implementation, is what is being exercised. The analysis is agnostic to any given implementation because it reasons solely about what is stated in the contract itself.}
+We propose an implementation-agnostic SMT-based solution to the three mentioned pitfalls. The solution is implementation-agnostic in the sense
+that there is no reliance on any associated implementation to analyze a contract. The idea of "design by contract" \cite{meyer1992applying} is that the 
+ideal way to create a software system is to first understand {\it what} it will do, and then figure out {\it how} to do it. Writing a contract and 
+any appropriate proofs is the first step, implementing the intent of the contract follows. This practice allows designers reason in the abstract 
+before working out how the actual computation takes place, as the properties and key components of the system are known prior to implementation. 
+Verifying contracts independently of any implementation keeps specification and implementation issues separate. 
 
 \section{Problem}
 
@@ -115,7 +112,9 @@ Filipovikj et al. \cite{filipovikj2017smt} propose a procedure that uses Z3 \cit
 for inconsistencies. This procedure is different from ours because it is intended for contracts that are written in
 natural language, as opposed to formal contracts used in verification languages. Much of the work is to translate
 natural language to constraints that can be passed to Z3. Their tool does not check contracts
-for unconstrained output or redundancy.
+for unconstrained output or redundancy. 
+
+Redundancy has been studied through the lens of logic minimization... (add related work about this)
 \egm{The notion of redundancy is actually really interesting. I wonder if it might be wise to read some of the related work is logic minimization? That is used a bunch in hardware design to simplify complex predicates. Binary decision diagrams were used extensively to minimize logic for sometime. Anyways, logic minimization may be just what is needed for redundancy, and it would be some more related work.}
 
 Work has been done to determine when components of a system are sufficiently covered. Jaffe et al. \cite{jaffe1989completeness}
@@ -128,12 +127,10 @@ completeness to check for unconstrained outputs.
 A contract is inconsistent if there are assertions or requirements that contradict one another. More formally, a
 contract \(\Phi\) is made up of specification clauses \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\).
 A specification clause is made up of logical expressions. A contract is consistent if there exists a way to satisfy
-\(\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n} \). Conversely, a contract is inconsistent
+\(\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n} \). Conversely, a contract is a contradiction
 if \(\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n} \implies false\).
-\egm{It may be more clear using the term \emph{contradiction} from predicate logic---the opposite of a tautology. An inconsistent contract is a contradiction.}
 
-Inconsistent assertions about the end state of a program can never be met by the associated implementation.
-\egm{Prefer post-state to end state? I think post-state is what is used previously.}
+Inconsistent assertions about the post-state of a program can never be met by the associated implementation.
 This may seem unimportant, as an SMT solver will detect the mismatch between the contract and the implementation
 and report an error. However, the only knowledge the programmer comes away with is that the contract and the
 implementation do not agree. They are none the wiser about what is causing the issue – is it an issue
@@ -144,8 +141,10 @@ Inconsistent requirements are arguably even more dangerous. An inconsistent requ
  \(false\). With a false pretense, any assertion can be proven to be vacuously true. This is the tricky case
  where an an SMT solver will not catch the issue, because \(false \implies true\) is valid logically. The implementation
  will appear to prove out with no issue whatsoever. This issue also arises in assertions that include implications: if
- an implication reduces to false on the left hand side, the right hand side is meaningless.
- \egm{Here it is worth noting that when the pre-condition is a contradiction, then the method/function cannot be called in any context since the pre-condition is always violated. That is a hint that something is amiss. But that aside, it's hard to figure out why the pre-condition cannot be satisfied, and looking for a contradiction is not the first think a developer things about.}
+ an implication reduces to false on the left hand side, the right hand side is meaningless. It is worth noting that when 
+ a precondition to a method is a contradiction, then the method cannot be called in any context because the precondition is 
+ always violated, which can be a teller that something is amiss. However, if the requirement is the left side of an 
+ implication in a postcondition, there is no obvious alarm.
 
 \subsection*{Example: inconsistent assertions}
 
@@ -161,7 +160,7 @@ method inconsistent(a : bool, b : bool) returns (result : bool)
 
 \end{lstlisting}
 
-We are trying to ensure that \(b\) is both true and untrue. This is inconsistent. All clauses must be satisfiable
+We are trying to ensure that \(b\) is both true and untrue. This is a contradiction. All clauses must be satisfiable
 at the same time for a contract to be consistent. As stated previously, with an implementation attached to this contract,
 Dafny would catch the issue and report that the implementation does not agree with the contract. What Dafny would not
 tell the developer is that the implementation can {\it never} satisfy the specification. In systems with complicated
@@ -263,7 +262,7 @@ In this simple example, we can see that the developer wants to specify that the 
 We will use the Z3 SMT solver as the main tool for detecting each above pitfall. As previosly stated,
 this work will be implemented for Dafny, but the techniques used could easily be used elsewhere.
 
-\subsection*{Detecting inconsistencies}
+\subsection*{Detecting contradictions}
 \egm{I now wonder if we should change inconsitencies to contradictions and use the term contradiction every where? Thoughts?}
 
 Detecting inconsistencies in specifications is as simple as determining whether the contract as a whole is satisfiable.
@@ -332,6 +331,8 @@ use to check their specifications of any given function or method. Any potential
 developer.
 
 \section{Timeline}
+
+All of the research and creation of deliverables will be completed during the months of May-August 2023. The writing of the thesis and defense will happen between September-December 2023.
 
 % \bibliographystyle{alpha}
 % \bibliography{sample}
