@@ -19,9 +19,13 @@
 \usepackage[square,numbers]{natbib}
 \usepackage{xcolor}
 
+\usepackage{tabularx}
+\usepackage{caption}
+
 \newif\ifcomments
 \commentstrue
 \newcommand{\egm}[1]{\ifcomments\textcolor{orange}{egm: #1}\fi}
+\newcommand{\cass}[1]{\ifcomments\textcolor{blue}{cass: #1}\fi}
 
 \bibliographystyle{abbrvnat}
 
@@ -34,15 +38,16 @@
 \begin{abstract}
 
 Software contracts, or specifications, define the intended behavior of systems. They are often used to check
-conformance and correctness of implementations, and therefore must be correct if they are to be used effectively.
-\egm{Would it be better to use the term \emph{safe substitution}? So contracts are a declarative statement of computation and tools such as Dafny prove that an implementation is a safe substitution for the contract? Safe substitution would need to be defined informally.}
-Writing contracts is error-prone and there are few tools for their debugging. This proposal presents three common
-pitfalls in software contracts and describes a plan to detect those pitfalls.
-\egm{I might suggest that the three common pitfalls be stated here intuitively.}
-It also outlines the
-blueprint for a tool built for the Dafny programming language that would detect and mitigate the pitfalls. The ideas
+that an implementation of a system is a safe substitution for the contract that defines it, meaning that the implementation could replace the contract while 
+maintaining the intended behavior. 
+Writing contracts is error-prone and there are limited tools for detecting their faults. This proposal presents four common
+pitfalls in software contracts and describes a plan to detect those pitfalls. The pitfalls are contradictions, vacuity, unconstrained outputs, and 
+redundancy.
+\cass{should I explain the pitfalls at all here, or just state them?}
+It also outlines the blueprint for a tool built for the Dafny programming language that would detect and mitigate the pitfalls. Dafny is a language that allows 
+developers to create logical contracts to guide the implementation of their programs, and uses an SMT-solver to check that the implementation is a 
+safe substitution for the contract. The ideas
 and algorithms presented can be extended to other contract-based languages.
-\egm{Give an intuitive definition of Dafny (same for other terms). The introduction can give a proper definition of each of the concepts mentioned in the abstract.}
 
 \end{abstract}
 
@@ -50,21 +55,25 @@ and algorithms presented can be extended to other contract-based languages.
 
 There is a growing importance of specifications in high-assurance systems – knowing what should be happening
 in the system versus what is actually happening is crucial, with the obvious goal being agreement
-between the two. Specification-aware languages such as Dafny \cite{dafny} and <<>> are also becoming more prevalent in
+between the two. Specification-aware languages such as Dafny \cite{leino2010dafny} and Alloy \cite{jackson2002alloy} are also becoming more prevalent in
 software engineering, both for contract-driven development and for increasing confidence in existing systems.
 
 Specifications, or software contracts, are used to describe the intended behavior of a program. They are used
 to specify both the inputs and outputs of a system in the form of preconditions and postconditions. Preconditions
 describe the required state of the system at the beginning of a method as well as the domain of the inputs,
 while postconditions describe the state of the system after the method has executed. Software contracts
-are used by languages such as Dafny to verify that implementations match their intended behavior, by proving
-that a program’s contract and implementation agree.
-\egm{I might suggest using \emph{safe substitution} above since Dafny proves an implementation is a safe substitution for a contract. It follows the Liskov principle---all need to be defined.}
-However, a proof of this form can be misleading - though
-one can be sure that the implementation adheres to the contract, there is no guarantee that the contract itself
-is without defects.
+are used by languages such as Dafny to verify that implementations are a safe substitution for their associated contracts. 
+The notion of a safe substitution comes from the Liskov Substitution Principle \cite{liskov1987keynote}, which states that 
+an object of a superclass should be replaceable with an object of any of its subclasses, without breaking the application. 
+This principle is upheld by making sure that the subclass's preconditions are no {\it stronger} than the superclass's 
+preconditions, while its postconditions are no {\it weaker} than the superclass's postconditions. Through the lens of 
+contracts and implementations, the contract is the superclass - it defines behavior that should {\it always} happen. The 
+implementation of the contract is a subclass. Dafny proves that the relationship between the two does not violate the 
+Liskov Substitution Principle, meaning that the implementation could safely replace the contract, and guarantee the 
+same behavior. However, a guarantee of this form can be misleading - though one can be sure that the implementation is a 
+safe substitution for the contract, there is no guarantee that the contract itself is without defects.
 
-Writing correct contracts can be as error prone as writing correct implementations, so a proof of adherence
+Writing correct contracts can be as error prone as writing correct implementations, so a proof of safe substitution 
 between the two can be meaningless if there are issues in the specification. There are many common pitfalls
 that can easily go undetected, and the consequences of these pitfalls can often completely void the utility of
 a contract. Even worse, a bad contract gone undetected can create a false sense of confidence in a system,
@@ -72,11 +81,12 @@ because contracts are often tied to proofs. Though a system “proves out”, it
 specifications. Faulty specifications lead to implementations that do not have the intended behavior, so developers 
 need to be extremely confident that the former are correct. 
 
-This work will focus on mitigating three common pitfalls of software contracts: inconsistency, unconstrained
-outputs, and redundancy. A contract is consistent if all of its components are realizable, meaning that the contract
-does not contain contradicting requirements. Left unchecked, inconsistencies can make a contract impossible to satisfy
-or cause properties to be vacuously true, as a false premise always leads to a true conclusion. Outputs are
-unconstrained when it is possible, given certain inputs, to end up with outputs that are in a domain that is not specified.
+This work will focus on mitigating four common pitfalls of software contracts: contradictions, vacuity, unconstrained
+outputs, and redundancy. A contract is a contradiction if it is not realizable, meaning that it 
+contains requirements that are impossible to satisfy. Contracts with vacuity are similar, and contain components that are contradictions, 
+but the contradictions appear as the left-hand side of an implication. These types of contradictions create a technically satisfiable contract, as 
+a false premise always leads to a true conclusion. However, there is no case where a developer would want to specify a condition that could 
+never be met. Outputs are unconstrained when it is possible, given certain inputs, to end up with outputs that are in a domain that is not specified.
 The implications of an unconstrained output can be large - it means that there is a section of an output that is
 completely irrelevant in verification. Finally, A contract is redundant when there are unnecessary components. Contracts
 with redundancy can become convoluted, making them more difficult to read and understand, and therefore more
@@ -95,10 +105,9 @@ This work will provide a means of checking the quality of logical software contr
 that implementations and proofs of agreement between contracts and implementations are correct. It will focus on
 examining the contracts independently of their corresponding implementations, and by doing so will allow developers
 to have a sanity check that does not require a model or implementation to be available. Logical contracts will be
-checked for three main pitfalls - inconsistency, unconstrained outputs, and redundancy. The contract quality checker
+checked for three main pitfalls - contradiction, unconstrained outputs, and redundancy. The contract quality checker
 will be built for the Dafny programming language, but the ideas presented are easily extendable to other languages
-and frameworks that use software contracts.
-\egm{Other frameworks and languages should be a part of the related work. These may also be mentioned in the introduction.}
+and frameworks that use software contracts. 
 
 \section{Related Work}
 
@@ -109,66 +118,74 @@ similar to the goals of this thesis, though that method transforms LTL to automa
 has the inherent limitation that transforming LTL formulas into models can become complex for large systems.
 
 Filipovikj et al. \cite{filipovikj2017smt} propose a procedure that uses Z3 \cite{de2008z3} to check software contracts
-for inconsistencies. This procedure is different from ours because it is intended for contracts that are written in
+for contradictions. This procedure is different from ours because it is intended for contracts that are written in
 natural language, as opposed to formal contracts used in verification languages. Much of the work is to translate
 natural language to constraints that can be passed to Z3. Their tool does not check contracts
 for unconstrained output or redundancy. 
 
-Redundancy has been studied through the lens of logic minimization... (add related work about this)
-\egm{The notion of redundancy is actually really interesting. I wonder if it might be wise to read some of the related work is logic minimization? That is used a bunch in hardware design to simplify complex predicates. Binary decision diagrams were used extensively to minimize logic for sometime. Anyways, logic minimization may be just what is needed for redundancy, and it would be some more related work.}
+Finding an irredundant set of requirements is a complex problem, as shown through the lens of finding the simplest form 
+of a proposition \cite{umans2006complexity}. Logic minimization has been studied for propositions that are in sum-of-product form, which is a 
+disjunction of conjunctions \cite{coudert1994two}. SMT-solvers take constraints in conjunctive normal form, or a conjunction of disjunctions, so to use these 
+techniques, the contracts would have to be converted to sum-of-product form. Yang et al. \cite{yang2000bds} proposed a solution that uses binary 
+decision diagram \cite{akers1978functional} variable reordering to 
+find simplifications of boolean logic. None of these techniques have been used for software contract redundancy checking, as far as we know.
 
 Work has been done to determine when components of a system are sufficiently covered. Jaffe et al. \cite{jaffe1989completeness}
 looked at different definitions of contract coverage, especially in a black-box environment. Their work asserts that "completeness"
 with respect to outputs in a contract means that each output must be fully specified. This work will use this definition of
 completeness to check for unconstrained outputs.
 
-\section{Inconsistency}
+As we are using an SMT-solver to check for various defects, ... talk about unsat core...
+\cass{not really sure how to talk about this. Should I talk about 
+just how it's possible that there are issues in SMT solvers, and so finding an unsat core shows that the SMT solver is correct? Should I mention that 
+Z3 does produce a core?}
 
-A contract is inconsistent if there are assertions or requirements that contradict one another. More formally, a
+Our work will be implemented for Dafny. There are other languages and frameworks that support software contracts. Eiffel \cite{meyer1988eiffel} is a language that 
+is based on the idea of design-by-contract, and supports creating contracts for its methods. The AGREE model checker allows developers to write contracts for their 
+software, and then uses model checking to verify whether or not the system upholds the requirements \cite{mercer2023synthesizing}. Other languages with similar 
+support for contracts are Alloy \cite{jackson2002alloy}, F\# \cite{syme2010f}, and JML \cite{leavens1998jml}. 
+
+\section{Contradictions}
+
+A contract is a contradiction if there are requirements or assertions that can never be simultaneously be true, no matter the values assigned 
+to its variables. Conversely, a contract is consistent if there does exists a satisfying assignment. More formally, a
 contract \(\Phi\) is made up of specification clauses \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\).
 A specification clause is made up of logical expressions. A contract is consistent if there exists a way to satisfy
-\(\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n} \). Conversely, a contract is a contradiction
+\(\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n} \). A contract is a contradiction
 if \(\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n} \implies false\).
 
-Inconsistent assertions about the post-state of a program can never be met by the associated implementation.
-This may seem unimportant, as an SMT solver will detect the mismatch between the contract and the implementation
-and report an error. However, the only knowledge the programmer comes away with is that the contract and the
-implementation do not agree. They are none the wiser about what is causing the issue – is it an issue
-with their implementation, their contract or both?
-\egm{Didn't we show that Dafny can prove anything about the post-state of a method in the presesnce of a post-condition that is a contradiction?}
+\begin{center}
+\begin{tabularx}{0.9\textwidth} { 
+  | >{\raggedright\arraybackslash}X 
+  | >{\raggedright\arraybackslash}X 
+  | >{\centering\arraybackslash}X 
+  | >{\raggedright\arraybackslash}X 
+  | >{\raggedleft\arraybackslash}X | }
+     \hline
+      & \textbf{Contract alone} & \textbf{Contract with implementation} & \textbf{Calling context} \\
+     \hline
+     \textbf{Preconditions} & No warnings  & No warnings & No valid inputs \\
+     \hline
+     \textbf{Postconditions}  & No warnings  & Violated postcondition & No warning \\
+    \hline
+\end{tabularx}
+\captionof{table}{Contradictions in various scenarios and their associated warning signs.}
+\end{center}
 
-Inconsistent requirements are arguably even more dangerous. An inconsistent requirement boils down to requiring
- \(false\). With a false pretense, any assertion can be proven to be vacuously true. This is the tricky case
- where an an SMT solver will not catch the issue, because \(false \implies true\) is valid logically. The implementation
- will appear to prove out with no issue whatsoever. This issue also arises in assertions that include implications: if
- an implication reduces to false on the left hand side, the right hand side is meaningless. It is worth noting that when 
+As previously stated, we want to find contradictions in a contract {\it before} writing an implementation or calling the associated method. 
+At this point, Dafny will not give any warnings of contradictions without an associated implementation, whether in the preconditions or postconditions. 
+
+ \subsection*{Requirements with contradictions}
+
+ A contradiction in a requirement boils down to requiring
+ \(false\). With a false pretense, any assertion can be proven to be vacuously true. This is a tricky case
+ where an SMT solver will not detect an issue, even with an associated implementation, because \(false \implies true\) is valid logically. The implementation
+ will appear to prove out with no issue whatsoever. However, when 
  a precondition to a method is a contradiction, then the method cannot be called in any context because the precondition is 
- always violated, which can be a teller that something is amiss. However, if the requirement is the left side of an 
- implication in a postcondition, there is no obvious alarm.
+ always violated, which can be a teller that something is amiss.
 
-\subsection*{Example: inconsistent assertions}
-
-In the following example, it is quite simple to see the inconsistency of the assertions. When systems are large and more
-convoluted, inconsistencies can be more difficult to spot. The simpleness of the example is to get to the heart of the matter.
-
-\begin{lstlisting}
-
-method inconsistent(a : bool, b : bool) returns (result : bool)
-    requires a && b
-    ensures a ==> b
-    ensures a && !b
-
-\end{lstlisting}
-
-We are trying to ensure that \(b\) is both true and untrue. This is a contradiction. All clauses must be satisfiable
-at the same time for a contract to be consistent. As stated previously, with an implementation attached to this contract,
-Dafny would catch the issue and report that the implementation does not agree with the contract. What Dafny would not
-tell the developer is that the implementation can {\it never} satisfy the specification. In systems with complicated
-contracts, a developer could spend time trying to fix an implementation that has no hope of satisfying an inconsistent
-contract.
-\egm{The premise is that this analysis is agnostic to the implementation, so when discussing examples, it might be wise to differentiate between implementing the contract and using the contract in a calling context. For example, if I use a method with a contract with a contradiction, either the pre-condition is always violated or Dafny can prove anything about the post-state. That is the observed consequence of contradictions. Maybe make that more clear in the example and text? Also, maybe move the example the beginning of the subsection?}
-
-\subsection*{Example: inconsistent requirements}
+ In the following example, it is quite simple to see the contradiction in the assertions. When systems are large and more
+convoluted, contradictions can be more difficult to spot. The simpleness of the example is to get to the heart of the matter.
 
 Consider the following example:
 
@@ -183,22 +200,83 @@ method BinarySearch(a: array<int>, key: int) returns (index: int)
 \end{lstlisting}
 
 The \(requires\) clause above has an error. The intent of the clause is to require a sorted array \(a\) as input.
-However, the claim that \(i <= j \implies a[i] < a[j]\) is false. If the indeces are the same, then \(a\) at that
+However, the claim that \(i <= j \implies a[i] < a[j]\) is false. If the indices are the same, then \(a\) at that
 index has to be the same. Because the relationship between requires and ensures is an implication, this false requirement
-makes any ensures clause provable. Dafny currenly will not catch this error, with or without an implementation attached to
+makes any ensures clause provable. Dafny currently will not catch this error, with or without an implementation attached to
+the contract, but in trying to call the method, one would find that there are no suitable inputs.  
+
+\subsection*{Assertions with contradictions}
+
+For contradictions found in postconditions, It is worth noting that 
+an SMT-solver {\it will} detect the mismatch between the contract and the implementation and report an error. However, 
+the only knowledge the programmer comes away with is that the contract and the implementation do not agree in some way. They are none the wiser 
+about what is causing the issue – is it an issue with their implementation, their contract or both? In a calling context, there is no warning 
+whatsoever, even with an unsuitable implementation, and anything will prove out in the context where the bad method is called. 
+
+\begin{lstlisting}
+
+method PostconditionContradiction(a : bool, b : bool) returns (result : bool)
+    requires a && b
+    ensures result
+    ensures a ==> !result
+
+\end{lstlisting}
+
+We are trying to ensure that \(result\) is both true and untrue. This is a contradiction. All clauses must be satisfiable
+at the same time for a contract to be consistent. As stated previously, with an implementation attached to this contract,
+Dafny would catch the issue and report that the implementation does not agree with the contract. What Dafny would not
+tell the developer is that the implementation can {\it never} satisfy the specification. In systems with complicated
+contracts, a developer could spend time trying to fix an implementation that has no hope of satisfying the contradictory
+contract. If the method were to be called in another method, there would be no warnings, and everything beyond the call-site 
+would prove out. 
+
+\section{Vacuity}
+
+An assertion is vacuously true when it is always true, regardless of inputs. 
+
+To demonstrate vacuity, consider the following example:
+
+\begin{lstlisting}
+
+method Vacuity(a : bool, b : bool) returns (result : bool)
+    requires a && b
+    ensures !a ==> !result
+
+\end{lstlisting}
+
+The left side of the implication in the \(ensures\) clause above will always evaluate to {\it false}, as {\it a} is required to be true. 
+Therefore, because \(!a == false\) and \(false \implies true\), the ensures clause will always be satisfied! This is never the intent of the 
+developer - why would anyone write an implication that has no effect? In a more complicated environment, vacuous clauses can be difficult to 
+spot, and there is currently no way for Dafny to detect them, with or without an implementation attached to
 the contract.
-\egm{Swap the examples so they match their introduction order earlier in the sub-section with contradictions in the pre-conditions first. Make clear the two consequences of a contradiction: pre-condition is always violated in any calling context or anything can be proved about the post-state also in any calling context.}
+
+\cass{It is kind of bothering me that a contradiction in the preconditions of a method creates vacuity (because preconditions -> postconditions), but 
+I talk about contradictions in preconditions in the contradictions section and not the vacuity section. Do you think things make sense the way I have them?}
 
 \section{Unconstrained outputs}
 
-\egm{Here the issue is framed in the context of an implementation, but the idea is to be agnostic to that implementation. Maybe consider just showing the contract? In cases such as the condractions, the issue is only discovered in the context if an implementation, so it that case, it some implementation code may make sense, but otherwise, focus on the contracts?}
 When writing a contract, the whole point is to be able to talk about the behavior of the system being specified.
 Every system has inputs (whether implicit or explicit) and outputs, and specifications tell us what these pieces need
 to look like. Let’s look at the idea of unconstrained outputs with an example:
 
 \begin{lstlisting}
 
-method absolute_value(n : int) returns (result : int)
+method AbsoluteValue(n : int) returns (result : int)
+    ensures n < 0 ==> result == -1 * n
+
+\end{lstlisting}
+
+It is easy to see that the case where the input \(n < 0\) is covered - we know exactly what {\it result} should look like in that case. 
+What about the case where \(n \geq 0\)? We know nothing about {\it result}, so anything goes. Unconstrained outputs should be detected before 
+writing an implementation, so that the implementation can be fully based off of the contract. 
+
+To illustrate the issues that can happen when outputs are not fully constrained, let's look at an example with an implementation attached to the 
+above contract. \cass{Let me know if I should just take this implementation part out. I kind of feel like it's helpful to see that with an 
+unconstrained output, there are parts of the implementation that won't affect verification at all.}
+
+\begin{lstlisting}
+
+method AbsoluteValue(n : int) returns (result : int)
     ensures n < 0 ==> result == -1 * n
 {
     if (n < 0) {
@@ -211,19 +289,19 @@ method absolute_value(n : int) returns (result : int)
 \end{lstlisting}
 
 We can easily see that this implementation of a method that returns the absolute value of an integer is correct. A developer may be
-tempted to only ensure something about the case that changes the value of \(n\). However, in the case that \(n >= 0\), the value
+tempted to only ensure something about the case that changes the value of \(n\), as we see in the contract. However, in the case that \(n >= 0\), the value
 of \(result\) is totally unconstrained. If we changed the implementation to return a hard-coded value for that case, everything
 would still prove out:
 
 \begin{lstlisting}
 
-method absolute_value(n : int) returns (result : int)
+method AbsoluteValue(n : int) returns (result : int)
     ensures n < 0 ==> result == -1 * n
 {
     if (n < 0) {
         return -1 * n;
     } else {
-        return 142;
+        return 42;
     }
 }
 
@@ -262,25 +340,23 @@ In this simple example, we can see that the developer wants to specify that the 
 We will use the Z3 SMT solver as the main tool for detecting each above pitfall. As previosly stated,
 this work will be implemented for Dafny, but the techniques used could easily be used elsewhere.
 
-\subsection*{Detecting contradictions}
-\egm{I now wonder if we should change inconsitencies to contradictions and use the term contradiction every where? Thoughts?}
+\subsection*{Detecting contradictions and vacuity}
 
-Detecting inconsistencies in specifications is as simple as determining whether the contract as a whole is satisfiable.
+Detecting contradictions in specifications is as simple as determining whether the contract as a whole is satisfiable.
 We need only to take the conjunction of each subformula, and ask Z3 if there is a satifying assignment. If Z3 tells us that the
-formula is unsatisfiable, we know that we have an inconsistency. However, we want more information than just that. We
-want to know what parts of the contract are inconsistent with other parts. This set of inconsistent formulas could be
+formula is unsatisfiable, we know that we have a contradiction. However, we want more information than just that. We
+want to know what parts of the contract are contradictions with other parts. This set of contradicting formulas could be
 nontrivial, as there could exisit multiple subformulas that do not agree with other subformulas. We want to report all
 such combinations to the developer.
 
-In order to acheive this, we draw from Barnat's \cite{barnat2016analysing} work on inconsistency detection.
-To find the combinations of consistent formulae and the combinations of inconsistent formulae in a contract
+In order to acheive this, we draw from Barnat's \cite{barnat2016analysing} work on contradiction detection.
+To find the combinations of consistent formulae and the combinations of contradicting formulae in a contract
 \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\), we start with the set \(\{\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n}\} \)
 and the sets that contain each individual formula: \(\{\varphi_{1}\}, \{\varphi_{2}\}, ... \{\varphi_{n}\} \), and check
-the consistency of each set. If any of the individual formulae are inconsistent alone, then \(\Phi\) will also be inconsistent.
+the consistency of each set. If any of the individual formulae are contradictions alone, then \(\Phi\) will also be a contradiction.
 We then go through a processes of removing formulae from \(\Phi\), and adding formulae to consistent individual sets.
 
-We will also check for inconsistency in clauses that have implications, to discover any vacuity in requirements.
-\egm{There should be some related work with what is called an \emph{unsat core} from the SMT literature. The issue is that when an SMT solver says there is not satisfying assignment, people want proof that such is really the case as it would be down to a defect in the SMT solver implementation. The unsat core is a proof certificate that the problem truly cannot be satisfied. It may be worth looking at some of the work with unsat cores.} 
+We will also check for contradictions in clauses that have implications, to discover any vacuity in requirements.
 
 \subsection*{Detecting unconstrained output}
 
@@ -310,16 +386,20 @@ Our approach for detecting unconstrained outputs will be based on this insight:
 
 Sending the disjunction of the relevant clauses to Z3 will tell us whether each output is sufficiently constrained.
 We are also interested in finding a way to return the part of the domain for each unconstrained output that
-is not covered.
+is not covered. 
 \egm{OK. Interesting. So if the ensures form a tautalogy then the output is constrained under every input? How do the pre-conditions factor in? It would have to be a tautology under the pre-condition constraints. Right? How is that logically stated?}
+\cass{I still need to figure out how to check that the outputs form a tautology under the precondition constraints and state that logically, and my brain is too tired to figure it out right now :-)}
 
 \subsection*{Detecting redundancy}
 
 Redundancy also draws from Barnat's work. Given a contract \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\),
 \(\varphi_{1}\) is not a redundant formula if \(\{\not \varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n}\}\)
 is satisfiable, because \(\{\varphi_{2} \land ... \land \varphi_{n}\} \not\implies \varphi_{1}\). So, we can check
-each formula to see if it is redundant with respect to the rest of the formulae.
-\egm{Look at logic minimization in the context of SMT. That would be really interesting. Construct the requires as a boolean predicate and then send that to the logic minimizer and reify it back into the original predicates.}
+each formula to see if it is redundant with respect to the rest of the formulae. 
+
+It may also be possible to use logic minimization tools to detect redundancy, and produce a simplified set of requirements. That would require 
+converting the contract into a boolean predicate and sending that predicate to a logic minimizer. Once minimized, it would have to be reified back 
+into its original form. 
 
 \section{Deliverables}
 
