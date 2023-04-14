@@ -26,24 +26,42 @@
 \newcommand{\secref}[1]{Sec.~\ref{#1}}
 \newcommand{\tabref}[1]{Table~\ref{#1}}
 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{light-gray}{gray}{0.88}
+
 \lstdefinelanguage{dafny}{
   literate=%
     {<=}{$\le$}1
     {>=}{$\ge$}1
     ,
-  sensitive=true,  % case sensitive
-  morecomment=[l]{//},
-  morecomment=[s]{/*}{*/},
-  morecomment=[s]{\{:}{\}},
-  morestring=[b]",
-  numbers=none,
-  firstnumber=0,
-  numberstyle=\tiny,
-  stepnumber=5,
-  commentstyle=\itshape,
+  % sensitive=true,  % case sensitive
+  % morecomment=[l]{//},
+  % morecomment=[s]{/*}{*/},
+  % morecomment=[s]{\{:}{\}},
+  % morestring=[b]",
+  % numbers=none,
+  % firstnumber=0,
+  % numberstyle=\tiny,
+  % stepnumber=5,
+  % commentstyle=\itshape,
   keywordstyle=\bfseries,
-  ndkeywordstyle=\bfseries,
+  % ndkeywordstyle=\bfseries,
+  % basicstyle=\ttfamily,
+  frame=none,
   basicstyle=\ttfamily,
+  aboveskip=1mm,
+  belowskip=1mm,
+  showstringspaces=false,
+  columns=flexible,
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=false,
+  breakatwhitespace=true,
+  tabsize=2,
+  linewidth=2\linewidth,
     morekeywords={class,datatype,codatatype,newtype,type,iterator,trait,extends,
       bool,char,nat,int,real,object,set,iset,multiset,seq,string,map,imap,array,array2,array3,
       bv0,bv1,bv2,bv3,bv4,bv5,bv6,bv7,bv8,bv12,bv16,bv20,bv24,bv32,bv48,bv64,bv128,
@@ -257,7 +275,7 @@ index has to be the same. Because the relationship between requires and ensures 
 makes any ensures clause provable. As indicated in the table, Dafny currently will not catch this error, with or without an implementation attached to
 the contract, but in trying to call the method, one would find that there are no suitable inputs.  
 
-\paragraph{Assertions with contradictions}
+\paragraph{Ensures with contradictions}
 
 For contradictions found in postconditions, It is worth noting that 
 an SMT solver {\it will} detect the mismatch between the contract and the implementation and report an error. However, 
@@ -287,9 +305,7 @@ would prove out. For example, after a call to \emph{Contradiction(true, true)} D
 
 \subsection{Vacuity}
 
-An assertion is vacuously true when it is always true, regardless of inputs. 
-
-To demonstrate vacuity, consider the following example:
+An assertion is vacuously true when it is always true, regardless of inputs. To demonstrate vacuity, consider the following example:
 
 \begin{lstlisting}[language=dafny]
 
@@ -420,7 +436,7 @@ unconstrained output can also be accomplished by using an SMT solver. Jaffe et a
 an output is \emph{complete}, or in our terms, constrained, if the disjunction of all constraints on that output is a
 tautology. For example, if there is a clause that ensures something about an output variable {\it o} if \(x < 5\), in order
 for the output to be fully constrained, we would need a constraint, or set of constraints, that cover \(x \geq 5\) and ensure 
-something about {\it o}. Thus \(x < 5 \lor x \geq 5\), which always evaluates to true.
+something about {\it o}. Thus \(x < 5 \lor x \geq 5\), which always evaluates to true. \egm{This statement is not correct. Try it in dafny. What happens is that dafny can prove something about the output when $x < 5$ but it can say nothing about the output when $x \ge 5$ so any assertion that you write will fail in that case.}
 
 It is important to note that the requirements on the inputs can change the domain that needs to be covered. If, for example, 
 an input {\it x} is constrained by the precondition {\it requires} \(x > 0\), then the only constraints on {\it x} that need to 
