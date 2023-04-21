@@ -430,18 +430,20 @@ We will also check for contradictions in clauses that have implications, to disc
 
 \subsection{Detecting unconstrained output}
 
+We want to know 
+
 Unconstrained output has to do with the domain of the output variables of a method. If a contract describes the entire
 domain of the variable at hand, then every possible value of that variable is accounted for. The process of detecting
 unconstrained output can also be accomplished by using an SMT solver. Jaffe et al. \cite{jaffe1989completeness} discuss how
 an output is \emph{complete}, or in our terms, constrained, if the disjunction of all constraints on that output is a
-tautology. For example, if there is a clause that ensures something about an output variable {\it o} if \(x < 5\), in order
+tautology. For example, if there is a clause that ensures \(x < 5 \implies o\) where {\it o} is some  output, in order
 for the output to be fully constrained, we would need a constraint, or set of constraints, that cover \(x \geq 5\) and ensure 
 something about {\it o}. Thus \(x < 5 \lor x \geq 5\), which always evaluates to true. \egm{This statement is not correct. Try it in dafny. What happens is that dafny can prove something about the output when $x < 5$ but it can say nothing about the output when $x \ge 5$ so any assertion that you write will fail in that case.}
 
 It is important to note that the requirements on the inputs can change the domain that needs to be covered. If, for example, 
 an input {\it x} is constrained by the precondition {\it requires} \(x > 0\), then the only constraints on {\it x} that need to 
 be covered are those where \(x > 0\). So, the constraints on the output must be a tautology under the precondition: 
-\((x > 0) \land (x < 5 \lor x \geq 5)\).
+\((x > 0) \implies (x < 5 \lor x \geq 5)\) which is equivalent to \(x \leq 0 \lor x < 5 \lor x \geq 5\).
 
 Our approach for detecting unconstrained outputs will be based on this insight:
 \break
@@ -451,7 +453,7 @@ Our approach for detecting unconstrained outputs will be based on this insight:
 \ForAll{$o \in \mathcal Outputs $}
     \State $relevantClauses \gets c_{1}, c_{2}, ..., c_{n}$ \Comment{Relevant clauses are those that mention o}
     \State $requirements \gets r_{1}, r_{2}, ..., r_{n}$
-    \If{$r_{1} \land r_{2} \land ... \land r_{n} \land (c_{1} \lor c_{2} \lor ... \lor c_{n})$ is true}
+    \If{$(r_{1} \land r_{2} \land ... \land r_{n}) \implies (c_{1} \lor c_{2} \lor ... \lor c_{n})$ is true}
         \State $result \gets constrained$
     \Else
         \State $result \gets unconstrained$
@@ -469,7 +471,7 @@ is not covered.
 \subsection{Detecting redundancy}
 
 Redundancy also draws from Barnat's work. Given a contract \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\),
-\(\varphi_{1}\) is not a redundant formula if \(\{\not \varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n}\}\)
+\(\varphi_{1}\) is not a redundant formula if \(\{\neg \varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n}\}\)
 is satisfiable, because \(\{\varphi_{2} \land ... \land \varphi_{n}\} \not\implies \varphi_{1}\). So, we can check
 each formula to see if it is redundant with respect to the rest of the formulae. 
 
