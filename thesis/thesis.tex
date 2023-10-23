@@ -1,0 +1,500 @@
+%%
+%% This is file `sample-sigplan.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `sigplan')
+%%
+%% IMPORTANT NOTICE:
+%%
+%% For the copyright see the source file.
+%%
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-sigplan.tex.
+%%
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%%
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+%%
+%%
+%% The first command in your LaTeX source must be the \documentclass command.
+\documentclass[sigplan,screen,anonymous]{acmart}
+%% NOTE that a single column version is required for
+%% submission and peer review. This can be done by changing
+%% the \doucmentclass[...]{acmart} in this template to
+%% \documentclass[manuscript,screen,review]{acmart}
+%%
+%% To ensure 100% compatibility, please check the white list of
+%% approved LaTeX packages to be used with the Master Article Template at
+%% https://www.acm.org/publications/taps/whitelist-of-latex-packages
+%% before creating your document. The white list page provides
+%% information on how to submit additional LaTeX packages for
+%% review and adoption.
+%% Fonts used in the template cannot be substituted; margin
+%% adjustments are not allowed.
+%%
+\usepackage{listings}
+\usepackage{algpseudocode}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{light-gray}{gray}{0.88}
+
+\lstdefinelanguage{dafny} {
+  literate=%
+    {<=}{$\le$}1
+    {>=}{$\ge$}1
+    ,
+  % sensitive=true,  % case sensitive
+  % morecomment=[l]{//},
+  % morecomment=[s]{/*}{*/},
+  % morecomment=[s]{\{:}{\}},
+  % morestring=[b]",
+  % numbers=none,
+  % firstnumber=0,
+  % numberstyle=\tiny,
+  % stepnumber=5,
+  % commentstyle=\itshape,
+  keywordstyle=\bfseries,
+  % ndkeywordstyle=\bfseries,
+  % basicstyle=\ttfamily,
+  frame=none,
+  basicstyle=\ttfamily,
+  aboveskip=1mm,
+  belowskip=1mm,
+  showstringspaces=false,
+  columns=flexible,
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  linewidth=2\linewidth,
+    morekeywords={class,datatype,codatatype,newtype,type,iterator,trait,extends,
+      bool,char,nat,int,real,object,set,iset,multiset,seq,string,map,imap,array,array2,array3,
+      bv0,bv1,bv2,bv3,bv4,bv5,bv6,bv7,bv8,bv12,bv16,bv20,bv24,bv32,bv48,bv64,bv128,
+      const,
+      function,predicate,copredicate,inductive,
+      ghost,var,static,protected,refines,
+      method,lemma,constructor,colemma,twostate,
+      returns,yields,abstract,module,import,default,opened,as,in,
+      requires,modifies,ensures,reads,decreases,include,provides,reveals,witness,
+      % expressions
+      match,case,false,true,null,old,fresh,allocated,unchanged,this,
+      % statements
+      assert,by,assume,print,new,if,then,else,while,invariant,break,label,return,yield,
+      where,calc,modify
+      }
+}
+
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+% \setcopyright{acmcopyright}
+% \copyrightyear{2018}
+% \acmYear{2018}
+% \acmDOI{XXXXXXX.XXXXXXX}
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+% \acmConference[Conference acronym 'XX]{Make sure to enter the correct
+%   conference title from your rights confirmation emai}{June 03--05,
+%   2018}{Woodstock, NY}
+%
+%  Uncomment \acmBooktitle if th title of the proceedings is different
+%  from ``Proceedings of ...''!
+%
+%\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+%  June 03--05, 2018, Woodstock, NY}
+% \acmPrice{15.00}
+% \acmISBN{978-1-4503-XXXX-X/18/06}
+
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% For managing citations, it is recommended to use bibliography
+%% files in BibTeX format.
+%%
+%% You can then either use BibTeX with the ACM-Reference-Format style,
+%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
+%% support for advanced citation of software artefact from the
+%% biblatex-software package, also separately available on CTAN.
+%%
+%% Look at the sample-*-biblatex.tex files for templates showcasing
+%% the biblatex styles.
+%%
+
+%%
+%% The majority of ACM publications use numbered citations and
+%% references.  The command \citestyle{authoryear} switches to the
+%% "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
+%% citations and references.
+%% Uncommenting
+%% the next command will enable that style.
+%%\citestyle{acmauthoryear}
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{Verifying Dafny Contract Integrity}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+\author{Cassidy Waldrip}
+\email{cassidy.waldrip@gmail.com}
+\affiliation{%
+  \institution{Brigham Young University}
+  \city{Provo}
+  \state{Utah}
+  \country{USA}
+  \postcode{84606}
+}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+Software contracts, or specifications, define the intended behavior of systems. They are used by the Dafny programming language to check that an implementation of a system is a safe substitution for the contract that defines it. Writing contracts is error-prone and there are limited tools for detecting their faults. We present a solution that detects four common pitfalls in Dafny contracts. The pitfalls are contradictions, vacuity, unconstrained outputs, and redundancy. The ideas and algorithms presented can be extended to other contract-based languages.
+
+\end{abstract}
+
+%%
+%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
+%% Please copy and paste the code instead of the example below.
+%%
+% \begin{CCSXML}
+% <ccs2012>
+%  <concept>
+%   <concept_id>00000000.0000000.0000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>500</concept_significance>
+%  </concept>
+%  <concept>
+%   <concept_id>00000000.00000000.00000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>300</concept_significance>
+%  </concept>
+%  <concept>
+%   <concept_id>00000000.00000000.00000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>100</concept_significance>
+%  </concept>
+%  <concept>
+%   <concept_id>00000000.00000000.00000000</concept_id>
+%   <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
+%   <concept_significance>100</concept_significance>
+%  </concept>
+% </ccs2012>
+% \end{CCSXML}
+
+% \ccsdesc[500]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+% \ccsdesc[300]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+% \ccsdesc{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+% \ccsdesc[100]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{software contract, contract quality assurance, Dafny programming language, contract santiy check, program correctness}
+
+% \received{20 February 2007}
+% \received[revised]{12 March 2009}
+% \received[accepted]{5 June 2009}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\section{Introduction}
+
+The Dafny programming language \cite{leino2010dafny} allows developers to write provably correct programs, with respect to their associated specifications. Specifications, or software contracts, are used to describe the intended behavior of a program. They are used to specify both the inputs and outputs of a system in the form of preconditions and postconditions. Preconditions, written with the \(requires\) keyword in Dafny, describe the required state of the system at the beginning of a method as well as the domain of the inputs, while postconditions, written as \(ensures\) describe the state of the system after the method has executed. Software contracts are used by Dafny to verify that implementations are a safe substitution \cite{liskov1987keynote} for their associated contracts.
+
+However, a guarantee of this form can be misleading - though one can be sure that the implementation is a safe substitution for the contract, there is no guarantee that the contract \emph{itself} is without defects.
+
+Writing correct contracts in Dafny can be as error prone as writing correct implementations, so a proof of safe substitution between the two can be meaningless if there are issues in the specification. There are many common pitfalls that can easily go undetected, and the consequences of these pitfalls can often completely void the utility of a contract. Even worse, a bad contract gone undetected can create a false sense of confidence in a system, as contracts are often tied to proofs. Faulty specifications lead to implementations that do not have the intended behavior, so developers need to be extremely confident that the former are correct.
+
+We present a solution to detect and report four major pitfalls in Dafny contracts: contradictions, vacuity, unconstrained outputs, and redundancy. A contract is a contradiction if it is not realizable, meaning that it contains requirements that are impossible to satisfy. Conversely, contracts with vacuity always hold, no matter their inputs. A common case of vacuity is an implication with an unsatisfiable left-hand side, as a false premise always evaluates to \(true\). Outputs are unconstrained when it is possible, given certain inputs, to end up with outputs that are in a domain that is not specified. The implications of an unconstrained output can be large - it means that there is an output space that is completely irrelevant in verification. Finally, A contract is redundant when there are unnecessary components. Contracts with redundancy can become convoluted, making them more difficult to read and understand, and therefore more
+error-prone.
+
+Dafny does not currently catch any of these pitfalls. Our solution leverages Dafny's source code and Z3 SMT solver \cite{de2008z3} backend. Inside the Dafny parser, we implement a source to source transformation as a rewriter to create new assertions that check each of our desired properties. These assertions should either fail, or pass, depending on what we are trying to learn about the contract. This technique is effective, as we leverage the mechanisms that Dafny already provides to simply add new verification conditions to its existing proofs. It uses Dafny's ability to reason about the assertions, cutting out the need to generate semantics as an SMT problem ourselves.
+
+\section{Related Work}
+
+Creating correct software contracts is a well-known issue \cite{rozier2016specification} \cite{kupferman2006sanity}. Barnat et al. \cite{barnat2012checking} \cite{barnat2016analysing} proposed a method for checking contract quality using model checking, both for contracts with associated models and for standalone contracts, and many of their algorithms and definitions guided this work. Their work is, however, inherently different in that they transform LTL to automata, rather than using an SMT solver.
+
+Filipovikj et al. \cite{filipovikj2017smt} propose a procedure that uses the Z3 SMT solver to check software contracts for contradictions. This procedure differs from ours because it is intended for contracts that are written in natural language, as opposed to formal contracts used in verification languages such as Dafny. Their tool does not check contracts for unconstrained output or redundancy.
+
+Finding an irredundant set of requirements is a complex problem, as shown through the lens of finding the simplest form of a proposition \cite{umans2006complexity}. Logic minimization has been studied for propositions that are in sum-of-product form \cite{coudert1994two}, while SMT solvers take constraints in conjunctive normal form. Yang et al. \cite{yang2000bds} proposed a solution that uses binary decision diagram \cite{akers1978functional} variable reordering to find simplifications of Boolean logic. More recent work leverages e-graphs, which are structures that represent congruence relations over expressions \cite{nelson1980fast}.
+
+Work has been done to determine when components of a system are sufficiently covered. Jaffe et al. \cite{jaffe1989completeness} looked at different definitions of contract coverage, especially in a black-box environment. Their work asserts that "completeness" with respect to outputs in a contract means that each output must be fully specified. This work uses this definition of completeness to check for unconstrained outputs.
+
+Fedchin et al. \cite{fedchin2023toolkit} leverage the Dafny backend to automatically generate tests from SMT counterexamples. We use a similar technique in our work by generating Dafny assertions that are then translated to SMT constraints, rather than constructing them directly for the SMT solver.
+
+\section{Contract pitfalls}
+
+We will look at each of the handled pitfalls through the lens of an example Dafny contract. Below is an attempted Dafny contract for binary search. There are errors in the specification that fall under each of the four handled pitfalls: contradiction, vacuity, unconstrained output, and redundancy.
+
+\begin{lstlisting}[language=dafny]
+
+method BinarySearch(a: array<int>, key: int)
+    returns (r: int)
+  requires a.Length > 0
+           && forall i : int, j : int
+                :: 0 <= i <= j < a.Length
+                    ==> a[i] < a[j]
+  requires 0 > key > a.Length - 1
+    ==> a[key] <= a[key + 1]
+  ensures r > 0
+    ==> r < a.Length && a[r] == key
+  ensures r < 0
+    ==> key !in a[..]
+
+\end{lstlisting}
+
+The first precondition requires that the input array \(a\) be nonempty and sorted in ascending order. The second precondition (which we will later show to be unnecessary) requires that if the value we're searching for, \(key\), is between 0 and the index of the last element of \(a\), then \(a[key] <= a[key + 1]\).
+
+The first postcondition ensures that if the returned index \(r\) is greater than 0, \(key\) is present in the array at that index. The second postcondition tells us that if \(r\) is less than 0, \(key\) is not in the array.
+
+\subsection{Contradiction}
+
+A contract is a contradiction if there are requirements or ensures that can never be simultaneously true, no matter the values assigned to its variables. More formally, a contract \(\Phi\) is made up of specification clauses \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\). \(\Phi\) is a contradiction if \(\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n} \implies false\).
+
+The first requirement in the binary search specification contains a tricky contradiction. The intent of the clause is to require a sorted array \(a\) as input. However, the claim that for all indices \(i\) and \(j\), \(0 <= i <= j < a.Length \implies a[i] < a[j]\) is false. If the indices \(i\) and \(j\) are equal, as is permitted by the clause, then \(a[i] == a[j]\). It can be corrected to a \(<=\) on the right-hand side of the implication:
+
+\begin{lstlisting}[language=dafny]
+
+requires a.Length > 0
+         && forall i : int, j : int
+                :: 0 <= i <= j < a.Length
+                    ==> a[i] <= a[j]
+
+\end{lstlisting}
+
+\subsection{Vacuity}
+
+An assertion is vacuously true when it always holds, regardless of inputs. To demonstrate vacuity, consider the second requirement from the binary search example:
+
+\begin{lstlisting}[language=dafny]
+
+requires 0 > key > a.Length - 1
+    ==> a[key] <= a[key + 1]
+
+\end{lstlisting}
+
+In this requirement, the programmer mistakenly used greater-than operators, rather than less-than
+operators. It is impossible for \(key\) to both be greater than \(a.Length - 1\) and less than \(0\). Because this error happens on the left-hand side of an implication, we have a clause that
+simplifies to \(false \implies a[key] <= a[key + 1] \). A false premise always evaluates to \(true\), so this clause can never be false and thus serves no purpose. Dafny currently has no
+way to detect vacuously true clauses.
+
+A corrected version of this clause would be:
+
+\begin{lstlisting}[language=dafny]
+
+requires 0 < key < a.Length - 1
+    ==> a[key] <= a[key + 1]
+
+\end{lstlisting}
+
+\subsection{Unconstrained output}
+
+Specifications exist to convey the intent of a program. No matter where the program ends up, we want to know what the output will look like. Program output is unconstrained if there are cases in which nothing about the output can be determined. Consider the two ensures clauses in the binary search specification:
+
+\begin{lstlisting}[language=dafny]
+
+ensures r > 0
+    ==> r < a.Length && a[r] == key
+ensures r < 0
+    ==> key !in a[..]
+
+\end{lstlisting}
+
+From this we know what happened if \(r > 0\) and if \(r < 0\). The developer forgot to include
+information about what happens if \(r == 0\). If that were to be the case, we could say nothing about the end state of the program.
+
+To correct this we simply add the \(r == 0\) case:
+
+\begin{lstlisting}[language=dafny]
+
+ensures r >= 0
+    ==> r < a.Length && a[r] == key
+ensures r < 0
+    ==> key !in a[..]
+
+\end{lstlisting}
+
+\subsection{Redundancy}
+
+Looking closely at the corrected requires clauses, we can see that the second clause is unnecessary:
+The first already requires \(a\) to be sorted.
+
+\begin{lstlisting}[language=dafny]
+
+requires forall i : int, j : int
+    :: 0 <= i <= j < a.Length ==> a[i] <= a[j]
+requires 0 < key < a.Length - 1
+    ==> a[key] <= a[key + 1]
+
+\end{lstlisting}
+
+Redundant clauses do not directly lead to errors, but they degrade the readability of the specification and can be a source of confusion.
+
+\section{Methods}
+
+For each of the pitfalls, we generate assertions that asks Dafny to answer whether or not that pitfall is found in a given specification. The different assertions will either pass or fail, depending on what we are trying to infer about the specification. To explain the algorithm and procedure for detecting each pitfall by constructing assertions, we will refer to the same binary search example.
+
+\subsection{Detecting contradictions and vacuity}
+
+Detecting contradictions in specifications is as simple as determining whether the contract as a whole is satisfiable.
+If we were using an SMT solver directly, we would need only to take the conjunction of each subformula, and ask the solver if there is a satisfying assignment. If the solver tells us that the
+formula is unsatisfiable, we know that we have a contradiction.
+
+To get Dafny to ask its backend SMT solver this question, we generate a slightly different assertion. To check for contradiction in the preconditions of the binary search method, we would generate this assertion:
+
+\begin{lstlisting}[language=dafny]
+
+assert !(forall i : int, j : int
+            :: 0 <= i <= j < a.Length ==> a[i] < a[j]
+        && 0 > key > a.Length - 1
+            ==> a[key] <= a[key + 1]);
+
+\end{lstlisting}
+
+The assertion should only hold if there \emph{is} a contradiction, as we are asserting that there is no case where the conditions hold.
+
+Similarly, checking for vacuity requires that we check for contradictions in the pretenses of implications.
+
+\subsection{Detecting unconstrained output}
+
+To detect unconstrained output, we need to show that in every possible end state of a program,
+the output is constrained. There should be no gaps in these constraints. To check this, we use the following algorithm:
+
+\begin{algorithmic}
+
+\ForAll{$o \in \mathcal Outputs $}
+    \State $relevantClauses \gets c_{1}, c_{2}, ..., c_{n}$ \Comment{Relevant clauses are those that constrain o}
+    \State $requirements \gets r_{1}, r_{2}, ..., r_{n}$
+    \If{$(r_{1} \land r_{2} \land ... \land r_{n}) \implies (c_{1} \lor c_{2} \lor ... \lor c_{n})$ is true}
+        \State $result \gets constrained$
+    \Else
+        \State $result \gets unconstrained$
+    \EndIf
+\EndFor
+
+\end{algorithmic}
+
+In short, all of the clauses that constrain an output should cover the output's entire domain. In our
+Dafny solution, a check of the output variable \(r\) from the binary search example is as follows:
+
+\begin{lstlisting}[language=dafny]
+
+assert (forall i : int, j : int
+            :: 0 <= i <= j < a.Length ==> a[i] <= a[j])
+            ==> (r > 0) || (r < 0);
+
+\end{lstlisting}
+
+This assertion fails because the output is unconstrained.
+
+\subsection{Detecting redundancy}
+
+Given a contract \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\),
+\(\varphi_{1}\) is not a redundant formula if \(\{\neg \varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n}\}\)
+is satisfiable, because \(\{\varphi_{2} \land ... \land \varphi_{n}\} \not\implies \varphi_{1}\). So, we can check
+each formula to see if it is redundant with respect to the rest of the formulae.
+
+Our solution checks each subformula in a Dafny contract for redundancy by asserting that all the
+other subformulas imply it. In the binary search example, we would detect the redundant clause by
+asserting:
+
+\begin{lstlisting}[language=dafny]
+
+assert (forall i : int, j : int ::
+            0 <= i < j < a.Length ==> a[i] <= a[j])
+            ==> (0 < key < a.Length - 1
+                    ==> a[key] <= a[key + 1]);
+
+\end{lstlisting}
+
+This assertion holds, showing that the first requirement implies the second. We can then remove the
+implied requirement.
+
+\section{Implementation and early results}
+
+A Dafny program goes through several passes when it is verified. First, there are several rewrites to the program that optimize it and handle different user-specified options. It then is cross-compiled to the Boogie intermediate verification language \cite{leino2008boogie}, which then builds constraints for the Z3 SMT solver. Our solution \cite{contractrepo} adds another rewrite to this process. Before cross-compilation occurs, we inject several new methods containing the necessary assertions for each specification. We then report the responses from Z3 for each assertion.
+
+Our tool is in an early stage, and has been tested on many small contracts that we defined to aid our implementation. A more thorough validation is still needed and is a current push for this project. In our simple contracts, the tool successfully detects the four pitfalls for Dafny specifications. The contracts we have tested include contract language features such as  implications, if-then-else expressions, binary operators, user-defined types, accessing members of user-defined classes, function calls, and quantifier expressions. There are some known current limitations on the types of contracts it can parse and interpret correctly.
+
+The main challenge that we are currently facing is getting accurate results for assertions with existential quantifiers. Assertions about the \emph{existence} of some value often fail, even if they are true - this is usually because Dafny relies on the use of syntactic patterns called triggers \cite{leino2016trigger} to find a satisfying assignment. We have yet to figure out how to automatically insert code with those patterns, or to choose our own triggers.  We run into this problem when detecting contradictions in contracts with universal quantifiers, as the negation of an expression with a $\mathit{forall}$ statement contains an $\mathit{exists}$ statement. We are currently working on automatically generating assertions for these cases that Dafny can handle. Another limitation is that at this point, a specification clause cannot have nested implications or nested if-then-else clauses.
+
+We are working to create more robust specifications for testing, as well as finding publicly available Dafny specifications on which to run the tool. There are almost certainly more limitations that we cannot report at this time due to a lack of data.
+
+\section{Discussion}
+
+This work provides a built-in tool for Dafny development that reduces the likelihood of specification errors. It grew out of a recognition that Dafny currently does very little to
+assist developers in finding specification bugs. Specification bugs can cause headache for
+developers that cannot get their programs to prove out, or can go silently unnoticed, causing a
+false sense of security in Dafny proofs. By providing checks for contradiction, vacuity, unconstrained outputs, and redundancy in contracts, developers can have increased confidence
+while using Dafny as a tool for verification-aware programming. This work, while implemented for
+Dafny, could also easily be extended to other specification-based languages.
+
+%%
+%% The acknowledgments section is defined using the "acks" environment
+%% (and NOT an unnumbered section). This ensures the proper
+%% identification of the section in the article metadata, and the
+%% consistent spelling of the heading.
+% \begin{acks}
+% To Robert, for the bagels and explaining CMYK and color spaces.
+% \end{acks}
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{thesis}
+
+\end{document}
+\endinput
+%%
+%% End of file `sample-sigplan.tex'.
