@@ -416,10 +416,10 @@ Detecting contradictions in specifications is as simple as determining whether t
 We need only to take the conjunction of each subformula, and ask Z3 if there is a satifying assignment. If Z3 tells us that the
 formula is unsatisfiable, we know that we have a contradiction. However, we want more information than just that. We
 want to know what parts of the contract are contradictions with other parts. This set of contradicting formulas could be
-nontrivial, as there could exisit multiple subformulas that do not agree with other subformulas. We want to report all
+nontrivial, as there could exist multiple subformulas that do not agree with other subformulas. We want to report all
 such combinations to the developer.
 
-In order to acheive this, we draw from Barnat's \cite{barnat2016analysing} work on contradiction detection.
+In order to achieve this, we draw from Barnat's \cite{barnat2016analysing} work on contradiction detection.
 To find the combinations of consistent formulae and the combinations of contradicting formulae in a contract
 \(\Phi = \{\varphi_{1}, \varphi_{2}, ..., \varphi_{n}\}\), we start with the set \(\{\varphi_{1} \land \varphi_{2} \land ... \land \varphi_{n}\} \)
 and the sets that contain each individual formula: \(\{\varphi_{1}\}, \{\varphi_{2}\}, ... \{\varphi_{n}\} \), and check
@@ -478,6 +478,18 @@ each formula to see if it is redundant with respect to the rest of the formulae.
 It may also be possible to use logic minimization tools to detect redundancy, and produce a simplified set of requirements. That would require 
 converting the contract into a boolean predicate and sending that predicate to a logic minimizer. Once minimized, it would have to be reified back 
 into its original form. Similarly, an e-graph may help to find rewrites of the contract and to determine the minimal version. 
+
+\section{Validation}
+
+How can we be sure that our methods are working? Because the purpose of this work is to create confidence in software contracts, we need to find a way to create 
+confidence in our work. Besides the explanations of how everything works above, we plan on extensively testing the final tool. There are certain elements 
+that need to be tested. Firstly, all of the built-in Dafny types need to be included in the testing, as well as a smattering of user-defined types. 
+We also need to test lots of contract structures - from one clause to many. We need to test if-statements, implications, complex clauses, and a mixture of 
+all of those. We also need to test contracts that have any combination of the common pitfalls described above. 
+
+There are a few ways we could do this. We could attempt to generate contracts at a large scale and test all of those. We could pull publicly available 
+Dafny programs and run the tool on them. We would create our own tests. For each of these methods, we require a ground-truth that most likely would 
+come from us, manually. 
 
 \section{Deliverables}
 
